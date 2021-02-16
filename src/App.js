@@ -5,13 +5,26 @@ import shortid from "shortid"
 const App = () => {
   const [task, setTask] = useState("")
   const [tasks, setTasks] = useState([])
+  const [editMode, setEditMode ] = useState(false)
+  const [id, setId] = useState("")
+  const [error , setError] = useState(null)
+
+  const validForm = () => {
+    let isValid = true
+    setError(null)
+
+    if(isEmpty(task)){
+      setError("Debes ingresar una tarea")
+      isValid = false
+    }
+
+    return isValid
+  }
 
   const addTask = (e) => {
     e.preventDefault()
-    if(isEmpty(task)){
-      console.log("task empty")
-      return
-    }
+    
+    if(!validForm()) return
 
     const newTask = {
       id: shortid.generate(),
@@ -26,6 +39,23 @@ const App = () => {
     console.log(idTask)
     const filteredTasks = tasks.filter(task => task.id !== idTask)
     setTasks(filteredTasks)
+  }
+
+  const handleEditTask = (theTask) => {
+    setTask(theTask.name)
+    setEditMode(true)
+    setId(theTask.id)
+  }
+
+  const saveTask = (e) => {
+    e.preventDefault()
+    if(!validForm) return
+
+    const editedTasks = tasks.map(item => item.id === id ? {id, name: task} : item)
+    setTasks(editedTasks)
+    setEditMode(false)
+    setTask("")
+    setId("")
   }
 
   return (
@@ -48,7 +78,9 @@ const App = () => {
               >
                 Delete
               </button>
-              <button className="btn btn-warning btn-sm float-right">
+              <button 
+                className="btn btn-warning btn-sm float-right"
+                onClick={() => handleEditTask(task)}>
                 Edit
               </button>
             </li>
@@ -57,8 +89,11 @@ const App = () => {
           </ul>)}
         </div>
         <div className="col-4">
-          <h4 className="text-center">Add Task</h4>
-          <form onSubmit={addTask}>
+          <h4 className="text-center">
+            {!editMode ? "Add Task" : "Edit Task"}
+          </h4>
+          <form onSubmit={!editMode ? addTask : saveTask }>
+            { error && <span className="text-danger">{error}</span>}
             <input 
               type="text"
               className="form-control mb-2"
@@ -67,9 +102,9 @@ const App = () => {
               value={task}>
             </input>
             <button 
-              className="btn btn-dark btn-block" 
+              className={ !editMode ? "btn btn-dark btn-block" : "btn btn-warning btn-block" }
               type="submit">
-              Add
+              { !editMode ? "Add" : "Save" }
             </button>
           </form>
         </div>
