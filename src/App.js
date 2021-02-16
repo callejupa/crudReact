@@ -1,6 +1,6 @@
 const App = () => {
   return (
-    <div>
+    <div className="container mt-5">
       <h1>Tasks</h1>
       <hr/>
     </div>
