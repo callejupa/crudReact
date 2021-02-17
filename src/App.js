@@ -1,6 +1,7 @@
 import { isEmpty, size } from "lodash"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import shortid from "shortid"
+import { getCollection } from "./actions"
 
 const App = () => {
   const [task, setTask] = useState("")
@@ -8,6 +9,13 @@ const App = () => {
   const [editMode, setEditMode ] = useState(false)
   const [id, setId] = useState("")
   const [error , setError] = useState(null)
+
+  useEffect(() => {
+    (async () => {
+      const result = await getCollection("tasks")
+      console.log(result)
+    })()
+  }, [])
 
   const validForm = () => {
     let isValid = true
